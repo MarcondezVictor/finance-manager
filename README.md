@@ -12,15 +12,11 @@ A full-stack web app for tracking personal money across several accounts (bank, 
 
 > Academic project · CTeSP TPSI · Instituto Politécnico de Tomar (2025/2026).
 
-<!--
-  SCREENSHOTS — save images in docs/screenshots/ and uncomment the table below.
-
 | Dashboard | Transactions |
 |:---:|:---:|
 | ![Dashboard with KPIs and charts](docs/screenshots/dashboard.png) | ![Transactions table with tags](docs/screenshots/transactions.png) |
 | **Accounts** | **New transaction** |
 | ![Accounts with current balances](docs/screenshots/accounts.png) | ![Transaction form](docs/screenshots/new-transaction.png) |
--->
 
 ## Features
 
