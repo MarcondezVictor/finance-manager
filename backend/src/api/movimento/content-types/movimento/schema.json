@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "movimentos",
+  "info": {
+    "singularName": "movimento",
+    "pluralName": "movimentos",
+    "displayName": "Movimento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "descricao": {
+      "type": "string"
+    },
+    "valor": {
+      "type": "decimal"
+    },
+    "data": {
+      "type": "date"
+    },
+    "tipo": {
+      "type": "enumeration",
+      "enum": [
+        "receita",
+        "despesa"
+      ]
+    },
+    "conta": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::conta.conta",
+      "inversedBy": "movimentos"
+    },
+    "etiquetas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::etiqueta.etiqueta",
+      "inversedBy": "movimentos"
+    },
+    "owner": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
