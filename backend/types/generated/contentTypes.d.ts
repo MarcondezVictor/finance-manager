@@ -114,43 +114,6 @@ export interface AdminApiTokenPermission extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface AdminAuditLog extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi_audit_logs';
-  info: {
-    displayName: 'Audit Log';
-    pluralName: 'audit-logs';
-    singularName: 'audit-log';
-  };
-  options: {
-    draftAndPublish: false;
-    timestamps: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    action: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    date: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'admin::audit-log'> &
-      Schema.Attribute.Private;
-    payload: Schema.Attribute.JSON;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-  };
-}
-
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -477,116 +440,117 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiContaConta extends Struct.CollectionTypeSchema {
-  collectionName: 'contas';
+export interface ApiAccountAccount extends Struct.CollectionTypeSchema {
+  collectionName: 'accounts';
   info: {
-    displayName: 'Conta';
-    pluralName: 'contas';
-    singularName: 'conta';
+    displayName: 'Account';
+    pluralName: 'accounts';
+    singularName: 'account';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    initialBalance: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::conta.conta'> &
-      Schema.Attribute.Private;
-    movimentos: Schema.Attribute.Relation<
+    localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::movimento.movimento'
-    >;
-    nome: Schema.Attribute.String;
-    owner: Schema.Attribute.Relation<
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-    publishedAt: Schema.Attribute.DateTime;
-    saldoInicial: Schema.Attribute.Decimal;
-    tipo: Schema.Attribute.Enumeration<
-      ['banco', 'carteira_digital', 'dinheiro', 'investimento']
-    >;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      'api::account.account'
+    > &
       Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    owner: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-  };
-}
-
-export interface ApiEtiquetaEtiqueta extends Struct.CollectionTypeSchema {
-  collectionName: 'etiquetas';
-  info: {
-    displayName: 'Etiqueta';
-    pluralName: 'etiquetas';
-    singularName: 'etiqueta';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::etiqueta.etiqueta'
-    > &
-      Schema.Attribute.Private;
-    movimentos: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::movimento.movimento'
-    >;
-    nome: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    transactions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::transaction.transaction'
+    >;
+    type: Schema.Attribute.Enumeration<
+      ['bank', 'digital_wallet', 'card', 'cash', 'investment']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'bank'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
   };
 }
 
-export interface ApiMovimentoMovimento extends Struct.CollectionTypeSchema {
-  collectionName: 'movimentos';
+export interface ApiTagTag extends Struct.CollectionTypeSchema {
+  collectionName: 'tags';
   info: {
-    displayName: 'Movimento';
-    pluralName: 'movimentos';
-    singularName: 'movimento';
+    displayName: 'Tag';
+    pluralName: 'tags';
+    singularName: 'tag';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
-    conta: Schema.Attribute.Relation<'manyToOne', 'api::conta.conta'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    data: Schema.Attribute.Date;
-    descricao: Schema.Attribute.String;
-    etiquetas: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::etiqueta.etiqueta'
-    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::movimento.movimento'
-    > &
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     owner: Schema.Attribute.Relation<
-      'oneToOne',
+      'manyToOne',
       'plugin::users-permissions.user'
     >;
     publishedAt: Schema.Attribute.DateTime;
-    tipo: Schema.Attribute.Enumeration<['receita', 'despesa']>;
+    transactions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::transaction.transaction'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    valor: Schema.Attribute.Decimal;
+  };
+}
+
+export interface ApiTransactionTransaction extends Struct.CollectionTypeSchema {
+  collectionName: 'transactions';
+  info: {
+    displayName: 'Transaction';
+    pluralName: 'transactions';
+    singularName: 'transaction';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    account: Schema.Attribute.Relation<'manyToOne', 'api::account.account'>;
+    amount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.Date & Schema.Attribute.Required;
+    description: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::transaction.transaction'
+    > &
+      Schema.Attribute.Private;
+    owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    type: Schema.Attribute.Enumeration<['income', 'expense']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'expense'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1051,7 +1015,6 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    contas: Schema.Attribute.Relation<'oneToMany', 'api::conta.conta'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1095,16 +1058,15 @@ declare module '@strapi/strapi' {
     export interface ContentTypeSchemas {
       'admin::api-token': AdminApiToken;
       'admin::api-token-permission': AdminApiTokenPermission;
-      'admin::audit-log': AdminAuditLog;
       'admin::permission': AdminPermission;
       'admin::role': AdminRole;
       'admin::session': AdminSession;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::conta.conta': ApiContaConta;
-      'api::etiqueta.etiqueta': ApiEtiquetaEtiqueta;
-      'api::movimento.movimento': ApiMovimentoMovimento;
+      'api::account.account': ApiAccountAccount;
+      'api::tag.tag': ApiTagTag;
+      'api::transaction.transaction': ApiTransactionTransaction;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

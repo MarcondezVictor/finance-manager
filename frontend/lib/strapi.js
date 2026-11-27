@@ -1,111 +1,87 @@
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const PAGE_SIZE = 100; // Strapi's maxLimit (backend/config/api.js)
 
-// Le o token guardado no navegador (só existe no lado do cliente)
+// Reads the token stored in the browser (only exists client-side)
 function getToken() {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('jwt');
 }
 
-async function pedido(endpoint, opcoes = {}) {
+async function request(endpoint, options = {}) {
   const token = getToken();
   const headers = { 'Content-Type': 'application/json' };
-  if (token) headers.Authorization = `Bearer ${token}`; // o "crachá"
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-  const resposta = await fetch(`${STRAPI_URL}/api${endpoint}`, {
-    ...opcoes,
-    headers: { ...headers, ...opcoes.headers },
+  const response = await fetch(`${STRAPI_URL}/api${endpoint}`, {
+    ...options,
+    headers: { ...headers, ...options.headers },
   });
 
-  if (!resposta.ok) {
-    throw new Error(`Erro ${resposta.status} ao chamar ${endpoint}`);
+  if (!response.ok) {
+    throw new Error(`Error ${response.status} while calling ${endpoint}`);
   }
-  if (resposta.status === 204) return null;
-  return resposta.json();
+  if (response.status === 204) return null;
+  return response.json();
 }
 
-// CRUD dos Movimentos
-
-// CREATE — criar um novo
-export async function criarMovimento(dados) {
-  return pedido('/movimentos', {
-    method: 'POST',
-    body: JSON.stringify({ data: dados }), // o Strapi exige { data: {...} }
-  });
+// Fetches every page of a collection. Strapi returns 25 records per request by
+// default, so a single call would silently drop older records.
+async function getAll(endpoint) {
+  const separator = endpoint.includes('?') ? '&' : '?';
+  const records = [];
+  let page = 1;
+  let pageCount = 1;
+  do {
+    const json = await request(
+      `${endpoint}${separator}pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`
+    );
+    records.push(...json.data);
+    pageCount = json.meta?.pagination?.pageCount ?? 1;
+    page += 1;
+  } while (page <= pageCount);
+  return records;
 }
 
-// READ — listar todos (com as relações via populate=*)
-export async function getMovimentos() {
-  const json = await pedido('/movimentos?populate=*&sort=data:desc');
+const send = (endpoint, method, data) =>
+  request(endpoint, { method, body: JSON.stringify({ data }) }); // Strapi expects { data: {...} }
+
+// Transactions
+export const getTransactions = () => getAll('/transactions?populate=*&sort=date:desc');
+export const createTransaction = (data) => send('/transactions', 'POST', data);
+export const updateTransaction = (documentId, data) => send(`/transactions/${documentId}`, 'PUT', data);
+export const deleteTransaction = (documentId) => request(`/transactions/${documentId}`, { method: 'DELETE' });
+
+// Accounts
+export const getAccounts = () => getAll('/accounts?sort=name:asc');
+export const createAccount = (data) => send('/accounts', 'POST', data);
+export const updateAccount = (documentId, data) => send(`/accounts/${documentId}`, 'PUT', data);
+export const deleteAccount = (documentId) => request(`/accounts/${documentId}`, { method: 'DELETE' });
+
+// Tags
+export const getTags = () => getAll('/tags?sort=name:asc');
+export async function createTag(name) {
+  const json = await send('/tags', 'POST', { name });
   return json.data;
 }
 
-// UPDATE — atualizar (usa o documentId)
-export async function atualizarMovimento(documentId, dados) {
-  return pedido(`/movimentos/${documentId}`, {
-    method: 'PUT',
-    body: JSON.stringify({ data: dados }),
-  });
-}
-
-// DELETE — apagar (usa o documentId)
-export async function apagarMovimento(documentId) {
-  return pedido(`/movimentos/${documentId}`, { method: 'DELETE' });
-}
-
-// Auxiliares do Dropdown
- 
-export async function getContas() {
-  const json = await pedido('/contas');
-  return json.data;
-}
-
-export async function getEtiquetas() {
-  const json = await pedido('/etiquetas');
-  return json.data;
-}
-
-export async function criarEtiqueta(nome) {
-  const json = await pedido('/etiquetas', {
-    method: 'POST',
-    body: JSON.stringify({ data: { nome } }),
-  });
-  return json.data;
-}
-
-// REGISTRO — cria um utilizador novo (fica com o papel Authenticated)
-export async function registar(username, email, password) {
-  const resposta = await fetch(`${STRAPI_URL}/api/auth/local/register`, {
+// Auth
+async function auth(endpoint, body, fallbackMessage) {
+  const response = await fetch(`${STRAPI_URL}/api${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify(body),
   });
-  const json = await resposta.json();
-  if (!resposta.ok) {
-    throw new Error(json?.error?.message || 'Erro no registo');
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(json?.error?.message || fallbackMessage);
   }
   return json; // { jwt, user }
 }
 
-// LOGIN — identifier pode ser o email OU o username
-export async function login(identifier, password) {
-  const resposta = await fetch(`${STRAPI_URL}/api/auth/local`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identifier, password }),
-  });
-  const json = await resposta.json();
-  if (!resposta.ok) {
-    throw new Error(json?.error?.message || 'Credenciais inválidas');
-  }
-  return json; // { jwt, user }
-}
+// Creates a new user (gets the Authenticated role)
+export const register = (username, email, password) =>
+  auth('/auth/local/register', { username, email, password }, 'Registration failed');
 
-export async function criarConta(dados) {
-  return pedido('/contas', { method: 'POST', body: JSON.stringify({ data: dados }) });
-}
-export async function atualizarConta(documentId, dados) {
-  return pedido(`/contas/${documentId}`, { method: 'PUT', body: JSON.stringify({ data: dados }) });
-}
-export async function apagarConta(documentId) {
-  return pedido(`/contas/${documentId}`, { method: 'DELETE' });
-}
+// identifier can be the email OR the username
+export const login = (identifier, password) =>
+  auth('/auth/local', { identifier, password }, 'Invalid credentials');

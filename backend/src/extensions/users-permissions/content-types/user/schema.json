@@ -65,12 +65,6 @@
       "target": "plugin::users-permissions.role",
       "inversedBy": "users",
       "configurable": false
-    },
-    "contas": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::conta.conta",
-      "mappedBy": "user"
     }
   }
 }

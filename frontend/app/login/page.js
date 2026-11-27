@@ -1,36 +1,37 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
-  const { entrar } = useAuth();
+  const { signIn } = useAuth();
   const router = useRouter();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [erro, setErro] = useState(null);
+  const [error, setError] = useState(null);
 
-  async function submeter(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setErro(null);
+    setError(null);
     try {
-      await entrar(identifier, password);
-      router.push('/movimentos'); // redireciona depois de entrar
+      await signIn(identifier, password);
+      router.push('/'); // go to the dashboard after signing in
     } catch (err) {
-      setErro(err.message);
+      setError(err.message);
     }
   }
 
   return (
     <Card className="mx-auto shadow-sm" style={{ maxWidth: 400 }}>
       <Card.Body>
-        <h3 className="mb-3">Entrar</h3>
-        {erro && <Alert variant="danger">{erro}</Alert>}
-        <Form onSubmit={submeter}>
+        <h3 className="mb-3">Sign in</h3>
+        {error && <Alert variant="danger">{error}</Alert>}
+        <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Email ou utilizador</Form.Label>
+            <Form.Label>Email or username</Form.Label>
             <Form.Control value={identifier} required
               onChange={(e) => setIdentifier(e.target.value)} />
           </Form.Group>
@@ -39,10 +40,10 @@ export default function LoginPage() {
             <Form.Control type="password" value={password} required
               onChange={(e) => setPassword(e.target.value)} />
           </Form.Group>
-          <Button type="submit" className="w-100">Entrar</Button>
+          <Button type="submit" className="w-100">Sign in</Button>
         </Form>
         <p className="mt-3 mb-0 text-center small">
-          Ainda não tens conta? <a href="/registrar">Registra-te</a>
+          Don&apos;t have an account? <Link href="/register">Sign up</Link>
         </p>
       </Card.Body>
     </Card>

@@ -3,13 +3,13 @@ import { AuthProvider } from '@/context/AuthContext';
 import NavBar from '@/components/NavBar';
 
 export const metadata = {
-  title: 'Gestor de Finanças',
-  description: 'Projeto Final - Programação Web',
+  title: 'Finance Manager',
+  description: 'Personal finance manager — accounts, income, expenses and a dashboard with charts.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt">
+    <html lang="en">
       <body>
         <AuthProvider>
           <NavBar />
