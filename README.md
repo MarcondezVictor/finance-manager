@@ -10,7 +10,7 @@
 
 A full-stack web app for tracking personal money across several accounts (bank, digital wallet, card, cash, investments). Users sign up, sign in and only ever see their own data. Every transaction can be tagged, and the dashboard shows where the money is and how it changed month by month.
 
-> Academic project · CTeSP TPSI · Instituto Politécnico de Tomar (2025/2026).
+> Academic project · Software Development higher diploma (CTeSP) · Polytechnic University of Tomar (2025/2026).
 
 | Dashboard | Transactions |
 |:---:|:---:|
