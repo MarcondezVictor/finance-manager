@@ -11,6 +11,8 @@
 A full-stack web app for tracking personal money across several accounts (bank, digital wallet, card, cash, investments). Users sign up, sign in and only ever see their own data. Every transaction can be tagged, and the dashboard shows where the money is and how it changed month by month.
 
 > Academic project · Software Development higher diploma (CTeSP) · Polytechnic University of Tomar (2025/2026).
+>
+> Merged from two earlier repos (frontend + backend); the history starts at the merge.
 
 | Dashboard | Transactions |
 |:---:|:---:|
