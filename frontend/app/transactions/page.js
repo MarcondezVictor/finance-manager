@@ -246,6 +246,7 @@ export default function TransactionsPage() {
                   type="button"
                   size="sm"
                   variant="outline-secondary"
+                  className="text-nowrap"
                   disabled={!newTag.trim()}
                   onClick={handleCreateTag}
                 >
