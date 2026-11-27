@@ -38,7 +38,7 @@ A full-stack web app for tracking personal money across several accounts (bank, 
 ## Architecture
 
 ```
-gestor-financas/
+finance-manager/
 ├── frontend/   Next.js 16 (App Router) · React 19 · React-Bootstrap · Recharts
 └── backend/    Strapi 5 headless CMS · REST API · SQLite
 ```
